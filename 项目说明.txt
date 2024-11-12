@@ -1,0 +1,35 @@
+环境配置：
+i9-12900K，3090Ti 24G，内存 64G
+Python 3.9.18，torch 2.0.1，torchaudio 2.0.2，torchvision 0.15.2
+TE-GCN标准环境即可运行，添加KAN模型，可能需要以下支持
+import torch
+import torch.nn.functional as F
+import math
+
+数据位置：
+.data/ 文件夹下
+
+CTRGCN、TDGCN网络训练方式：
+使用代码GCNS，在终端执行（model需要在config中设置为ctrgcn或者tdgcn）
+python main.py --config ./config/train.yaml --work-dir ./work_dir/train -model_saved_name ./runs/train --device 0 --batch-size 32 --test-batch-size 32 --warm_up_epoch 0 --only_train_epoch 60
+需要根据实验1-8进行八次训练，保存结果41ep，51ep，52ep，46ep，42ep，53ep，47ep，51ep（见权重文件）
+
+TEGCN网络训练方式：
+使用代码TE-GCN，在终端执行 sh scripts/TRAIN_V2.sh (训练模型)
+需要根据实验9、10、11进行三次训练，分别保存结果46ep、42ep、49ep（见权重文件）
+
+
+pred后处理方法：
+在TE-GCN代码中执行以下操作
+运行search.py，对参数组合进行粗略搜索，得到一个大致最佳结果。
+运行Ensemble_MixGCN_PSO.py，将粗略搜索的结果作为起点，进行粒子群优化搜索，得到最终参数。
+运行Ensemble_MixGCN.py ，将最终参数放入Rate，在work_dir中得到final_pred（最终预测结果）
+本次结果权重为[-1.7423358313131845, 1.8, 0.6454083990710274, 3.0464526874915046, 2.233692145264327, 3.04404934233172,
+           	       8.542124691989667, 1.6749577052857367, 3.4021435972273304, -0.970146691137931, 5.8]
+
+创新点：
+移植CTRGCN和TDGCN网络到TEGCN代码中，一套代码可以方便训练多个模型（移植到GCNS代码中，通过修改config的model来更换模型）。
+使用KAN网络进行最终分类线性变换，更加简洁高效，性能更好（model文件夹中kan.py，用于各个GCN网络的最终线性分类）。
+使用自动权重搜索，在val集中得到最好参数（TE-GCN代码中的pred后处理方法）。
+
+
