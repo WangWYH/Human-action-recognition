@@ -1,0 +1,54 @@
+base_lr: 0.08
+batch_size: 16
+config: ./config/train.yaml
+device:
+- 1
+eval_interval: 5
+feeder: feeders.feeder.Feeder
+ignore_weights: []
+label_smoothing: 0.0
+log_interval: 10
+model: model.tdgcn.Model
+model_args:
+  graph: graph.uav.Graph
+  graph_args:
+    labeling_mode: spatial
+  num_class: 155
+  num_person: 2
+  num_point: 17
+model_saved_name: ./runs/train_td_joint_bone
+nesterov: true
+num_epoch: 60
+num_worker: 1
+only_train_epoch: 60
+only_train_part: false
+optimizer: SGD
+phase: train
+print_log: true
+save_interval: 1
+save_score: false
+seed: 1
+show_topk:
+- 1
+- 5
+start_epoch: 0
+step:
+- 40
+- 45
+test_batch_size: 16
+test_feeder_args:
+  data_path: ./datas/val_joint_bone.npy
+  label_path: ./datas/val_label.npy
+train_feeder_args:
+  data_path: ./datas/train_joint_bone.npy
+  debug: false
+  label_path: ./datas/train_label.npy
+  normalization: false
+  random_choose: false
+  random_move: false
+  random_shift: false
+  window_size: -1
+warm_up_epoch: 0
+weight_decay: 0.0003
+weights: null
+work_dir: ./work_dir/train_td_joint_bone
